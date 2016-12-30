@@ -14,17 +14,25 @@ namespace RealmSampleApp
 			var viewModel = new ContactsListViewModel();
 			BindingContext = viewModel;
 
-			_contactsListView = new ListView
+			var addContactButton = new ToolbarItem
+			{
+				Text = "+"
+			};
+			addContactButton.Clicked += HandleAddContactButtonClicked;
+			ToolbarItems.Add(addContactButton);
+
+			_contactsListView = new ListView(ListViewCachingStrategy.RecycleElement)
 			{
 				ItemTemplate = new DataTemplate(typeof(ContactsListViewCell))
 			};
-			_contactsListView.SetBinding<ContactsListViewModel>(ListView.ItemsSourceProperty, vm => vm.ViewableContactsDataList);
+			_contactsListView.SetBinding<ContactsListViewModel>(ListView.ItemsSourceProperty, vm => vm.AllContactsDataList);
 
 			Title = "Contacts";
 
 			Content = _contactsListView;
 		}
-		#endregion
+
+	#endregion
 
 		#region Methods
 		protected override void OnAppearing()
@@ -43,9 +51,20 @@ namespace RealmSampleApp
 
 		async void HandleItemSelected(object sender, SelectedItemChangedEventArgs e)
 		{
-			var item = e?.SelectedItem as ContactModel;
+			var listView = sender as ListView;
+			var selectedContactModel = e?.SelectedItem as ContactModel;
 
-			await Navigation.PushAsync(new ContactsDetailPage(item));
+			await Navigation.PushAsync(new ContactsDetailPage(selectedContactModel));
+
+			listView.SelectedItem = null;
+		}
+
+		async void HandleAddContactButtonClicked(object sender, EventArgs e)
+		{
+			var newContact = new ContactModel();
+			RealmDatabase.AddContact(newContact);
+
+			await Navigation.PushAsync(new ContactsDetailPage(newContact));
 		}
 		#endregion
 	}

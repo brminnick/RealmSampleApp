@@ -12,7 +12,7 @@ namespace RealmSampleApp
 		static Realm _realm = Realm.GetInstance();
 		#endregion
 
-		#region
+		#region Properties
 		public static int Count =>
 			_realm.All<ContactModel>().Count();
 
@@ -21,32 +21,12 @@ namespace RealmSampleApp
 		#endregion
 
 		#region Methods
-		public static async Task AddContact(ContactModel contact)
+		public static void AddContact(ContactModel contact)
 		{
-			await _realm.WriteAsync(tempRealm =>
+			_realm.Write(() =>
 			{
-				var contactFromRealm = tempRealm.All<ContactModel>()?.Where(x => x.Id == contact.Id)?.FirstOrDefault();
-
-				if (contactFromRealm == null)
-				{
-					tempRealm.Add(contact);
-					return;
-				}
-
-				UpdateContact(contactFromRealm, contact);
+				_realm.Add(contact);
 			});
-		}
-
-		static void UpdateContact(ContactModel currentContact, ContactModel updatedContact)
-		{
-			currentContact.City = updatedContact.City;
-			currentContact.FirstName = updatedContact.FirstName;
-			currentContact.IsFavorite = updatedContact.IsFavorite;
-			currentContact.LastName = updatedContact.LastName;
-			currentContact.PhoneNumber = updatedContact.PhoneNumber;
-			currentContact.Street1Address = updatedContact.Street1Address;
-			currentContact.Street2Address = updatedContact.Street2Address;
-			currentContact.ZipCode = updatedContact.ZipCode;
 		}
 		#endregion
 	}

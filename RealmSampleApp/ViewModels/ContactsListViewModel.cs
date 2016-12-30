@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Xamarin.Forms;
+using Realms;
 using System.Linq;
-using System.Threading.Tasks;
+
 namespace RealmSampleApp
 {
-	public class ContactsListViewModel : BaseViewModel
+	public class ContactsListViewModel
 	{
 		#region Constant Fields
 		readonly Random _random = new Random();
@@ -25,63 +25,26 @@ namespace RealmSampleApp
 			{"Watson"},
 			{"Minnick"}
 		};
-
-		readonly List<string> _streetList = new List<string>
-		{
-			{"Folsom St."},
-			{"Clementina St."},
-			{"Sansome St."},
-			{"Pacific Ave."}
-		};
-
-		readonly List<string> _cityList = new List<string>
-		{
-			{"San Francisco"},
-			{"Melbourne"},
-			{"Seattle"},
-			{"Portland"}
-		};
-
-		readonly List<string> _stateList = new List<string>
-		{
-			{"CA"},
-			{"FL"},
-			{"WA"},
-			{"OR"}
-		};
 		#endregion
 
-		#region Fields
-		List<ContactModel> _allContactsDataList, _viewableContactsDataList;
-		#endregion
-
+		#region Constructors
 		public ContactsListViewModel()
 		{
-			Task.Run(async () =>
-			{
-				if (RealmDatabase.Count == 0)
-				{
-					for (int i = 0; i < 4; i++)
-						await RealmDatabase.AddContact(GenerateRandomContactModel());
-				}
 
-				AllContactsDataList = RealmDatabase.AllContacts;
-				ViewableContactsDataList = GetViewableContactsListData();
-			});
+			if (RealmDatabase.Count < 4)
+			{
+				for (int i = 0; i < 4; i++)
+				{
+					RealmDatabase.AddContact(GenerateRandomContactModel());
+				}
+			}
+
+			AllContactsDataList = RealmDatabase.AllContacts;
 		}
+		#endregion
 
 		#region Properties
-		public List<ContactModel> AllContactsDataList
-		{
-			get { return _allContactsDataList; }
-			set { SetProperty(ref _allContactsDataList, value); }
-		}
-
-		public List<ContactModel> ViewableContactsDataList
-		{
-			get { return _viewableContactsDataList; }
-			set { SetProperty(ref _viewableContactsDataList, value); }
-		}
+		public List<ContactModel> AllContactsDataList { get; }
 		#endregion
 
 		#region Methods
@@ -90,30 +53,16 @@ namespace RealmSampleApp
 			var contactModel = new ContactModel
 			{
 				FirstName = GenerateRandomFirstName(),
-				City = GenerateRandomCity(),
 				LastName = GenerateRandomLastName(),
-				PhoneNumber = GenerateRandomPhoneNumber(),
-				State = GenerateRandomState(),
-				Street1Address = GenerateRandomStreetAddress(),
-				ZipCode = GenerateRandomZipCode()
+				PhoneNumber = GenerateRandomPhoneNumber()
 			};
 
 			return contactModel;
 		}
 
-		List<ContactModel> GetViewableContactsListData()
-		{
-			return AllContactsDataList;
-		}
-
 		string GenerateRandomFirstName()
 		{
 			return _firstNameList[_random.Next(0, _firstNameList.Count - 1)];
-		}
-
-		string GenerateRandomCity()
-		{
-			return _cityList[_random.Next(0, _cityList.Count - 1)];
 		}
 
 		string GenerateRandomLastName()
@@ -124,21 +73,6 @@ namespace RealmSampleApp
 		string GenerateRandomPhoneNumber()
 		{
 			return $"{_random.Next(100, 999)}-{_random.Next(100, 999)}-{_random.Next(1000, 9999)}";
-		}
-
-		string GenerateRandomState()
-		{
-			return _stateList[_random.Next(0, _stateList.Count - 1)];
-		}
-
-		string GenerateRandomStreetAddress()
-		{
-			return _streetList[_random.Next(0, _streetList.Count - 1)];
-		}
-
-		string GenerateRandomZipCode()
-		{
-			return _random.Next(11111, 99999).ToString();
 		}
 		#endregion
 	}
