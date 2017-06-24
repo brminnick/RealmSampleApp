@@ -2,70 +2,75 @@
 using Xamarin.Forms;
 namespace RealmSampleApp
 {
-	public class ContactsListPage : ContentPage
-	{
-		#region Constant Fields
-		readonly ListView _contactsListView;
-		#endregion
+    public class ContactsListPage : BaseContentPage<ContactsListViewModel>
+    {
+        #region Constant Fields
+        readonly ListView _contactsListView;
+        readonly ToolbarItem _addContactButton;
+        #endregion
 
-		#region Constructors
-		public ContactsListPage()
-		{
-			var viewModel = new ContactsListViewModel();
-			BindingContext = viewModel;
+        #region Constructors
+        public ContactsListPage()
+        {
+            _addContactButton = new ToolbarItem { Text = "+" };
+            ToolbarItems.Add(_addContactButton);
 
-			var addContactButton = new ToolbarItem
-			{
-				Text = "+"
-			};
-			addContactButton.Clicked += HandleAddContactButtonClicked;
-			ToolbarItems.Add(addContactButton);
+            _contactsListView = new ListView(ListViewCachingStrategy.RecycleElement)
+            {
+                ItemTemplate = new DataTemplate(typeof(ContactsListViewCell)),
+                IsPullToRefreshEnabled = true
+            };
+            _contactsListView.SetBinding(ListView.ItemsSourceProperty, nameof(ViewModel.AllContactsList));
+            _contactsListView.SetBinding(ListView.RefreshCommandProperty, nameof(ViewModel.RefreshCommand));
 
-			_contactsListView = new ListView(ListViewCachingStrategy.RecycleElement)
-			{
-				ItemTemplate = new DataTemplate(typeof(ContactsListViewCell))
-			};
-			_contactsListView.SetBinding<ContactsListViewModel>(ListView.ItemsSourceProperty, vm => vm.AllContactsDataList);
+            Title = "Contacts";
 
-			Title = "Contacts";
+            Content = _contactsListView;
+        }
+        #endregion
 
-			Content = _contactsListView;
-		}
+        #region Methods
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
 
-	#endregion
+            Device.BeginInvokeOnMainThread(_contactsListView.BeginRefresh);
+        }
 
-		#region Methods
-		protected override void OnAppearing()
-		{
-			base.OnAppearing();
+        protected override void SubscribeEventHandlers()
+        {
+            _contactsListView.ItemSelected += HandleItemSelected;
+            _addContactButton.Clicked += HandleAddContactButtonClicked;
+            ViewModel.PullToRefreshCompleted += HandlePullToRefreshCompleted;
+        }
 
-			_contactsListView.ItemSelected += HandleItemSelected;
-		}
+        protected override void UnsubscribeEventHandlers()
+        {
+            _contactsListView.ItemSelected -= HandleItemSelected;
+            _addContactButton.Clicked -= HandleAddContactButtonClicked;
+            ViewModel.PullToRefreshCompleted -= HandlePullToRefreshCompleted;
+        }
 
-		protected override void OnDisappearing()
-		{
-			base.OnDisappearing();
+        void HandleItemSelected(object sender, SelectedItemChangedEventArgs e)
+        {
+            var listView = sender as ListView;
+            var selectedContactModel = e?.SelectedItem as ContactModel;
 
-			_contactsListView.ItemSelected -= HandleItemSelected;
-		}
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                await Navigation.PushAsync(new ContactDetailPage(selectedContactModel, false));
+                listView.SelectedItem = null;
+            });
+        }
 
-		async void HandleItemSelected(object sender, SelectedItemChangedEventArgs e)
-		{
-			var listView = sender as ListView;
-			var selectedContactModel = e?.SelectedItem as ContactModel;
+        void HandleAddContactButtonClicked(object sender, EventArgs e)
+        {
+            Device.BeginInvokeOnMainThread(async () =>
+               await Navigation.PushModalAsync(new NavigationPage(new ContactDetailPage(new ContactModel(), true))));
+        }
 
-			await Navigation.PushAsync(new ContactsDetailPage(selectedContactModel));
-
-			listView.SelectedItem = null;
-		}
-
-		async void HandleAddContactButtonClicked(object sender, EventArgs e)
-		{
-			var newContact = new ContactModel();
-			RealmDatabase.AddContact(newContact);
-
-			await Navigation.PushAsync(new ContactsDetailPage(newContact));
-		}
-		#endregion
-	}
+        void HandlePullToRefreshCompleted(object sender, EventArgs e) =>
+            Device.BeginInvokeOnMainThread(_contactsListView.EndRefresh);
+        #endregion
+    }
 }

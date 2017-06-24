@@ -1,79 +1,100 @@
 ﻿using System;
+using System.Windows.Input;
+using System.Threading.Tasks;
 using System.Collections.Generic;
-using Realms;
-using System.Linq;
+
+using Xamarin.Forms;
+
+using RandomNameGenerator;
 
 namespace RealmSampleApp
 {
-	public class ContactsListViewModel
-	{
-		#region Constant Fields
-		readonly Random _random = new Random();
+    public class ContactsListViewModel : BaseViewModel
+    {
+        #region Fields
+        ICommand _refreshCommand;
+        IList<ContactModel> _allContactsList;
+        #endregion
 
-		readonly List<string> _firstNameList = new List<string>
-		{
-			{"Brandon"},
-			{"Kim"},
-			{"Allen"},
-			{"Bruce"}
-		};
+        #region Events
+        public event EventHandler PullToRefreshCompleted;
+        #endregion
 
-		readonly List<string> _lastNameList = new List<string>
-		{
-			{"Smith"},
-			{"Jones"},
-			{"Watson"},
-			{"Minnick"}
-		};
-		#endregion
+        #region Properties
+        public ICommand RefreshCommand => _refreshCommand ??
+            (_refreshCommand = new Command(async () => await ExecuteRefreshCommand()));
 
-		#region Constructors
-		public ContactsListViewModel()
-		{
-
-			if (RealmDatabase.Count < 4)
-			{
-				for (int i = 0; i < 4; i++)
-				{
-					RealmDatabase.AddContact(GenerateRandomContactModel());
-				}
-			}
-
-			AllContactsDataList = RealmDatabase.AllContacts;
-		}
-		#endregion
-
-		#region Properties
-		public List<ContactModel> AllContactsDataList { get; }
+        public IList<ContactModel> AllContactsList
+        {
+            get => _allContactsList;
+            set => SetProperty(ref _allContactsList, value);
+        }
 		#endregion
 
 		#region Methods
-		ContactModel GenerateRandomContactModel()
+        ContactModel GenerateRandomContactModel()
+        {
+            var random = new Random((int)DateTime.Now.Ticks);
+
+            var contactModel = new ContactModel
+            {
+                FirstName = GenerateRandomFirstName(),
+                LastName = GenerateRandomLastName(),
+                PhoneNumber = GenerateRandomPhoneNumber()
+            };
+
+            return contactModel;
+
+            string GenerateRandomFirstName() =>
+                ToPascalCase(NameGenerator.GenerateFirstName((Gender)random.Next(0, Enum.GetNames(typeof(Gender)).Length - 1)));
+
+            string GenerateRandomLastName() =>
+                ToPascalCase(NameGenerator.GenerateLastName());
+
+            string GenerateRandomPhoneNumber() =>
+                $"{random.Next(100, 999)}-{random.Next(100, 999)}-{random.Next(1000, 9999)}";
+        }
+
+		string ToPascalCase(string text)
 		{
-			var contactModel = new ContactModel
+			if (string.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(text))
+				return string.Empty;
+
+			string lowerCaseText = text.ToLower();
+
+			string[] splits = lowerCaseText.Split(' ');
+
+			for (int i = 0; i < splits.Length; i++)
 			{
-				FirstName = GenerateRandomFirstName(),
-				LastName = GenerateRandomLastName(),
-				PhoneNumber = GenerateRandomPhoneNumber()
-			};
+				switch (splits[i].Length)
+				{
+					case 1:
+						break;
 
-			return contactModel;
+					default:
+						splits[i] = char.ToUpper(splits[i][0]) + splits[i].Substring(1);
+						break;
+				}
+			}
+
+			return string.Join(" ", splits);
+
 		}
 
-		string GenerateRandomFirstName()
-		{
-			return _firstNameList[_random.Next(0, _firstNameList.Count - 1)];
-		}
+        async Task ExecuteRefreshCommand()
+        {
+            if (ContactRealm.Count < 4)
+            {
+                for (int i = 0; i < 4; i++)
+                    await ContactRealm.SaveContact(GenerateRandomContactModel());
+            }
 
-		string GenerateRandomLastName()
-		{
-			return _lastNameList[_random.Next(0, _lastNameList.Count - 1)];
-		}
+            AllContactsList = ContactRealm.AllContacts;
+            OnPullToRefreshCompleted();
+        }
 
-		string GenerateRandomPhoneNumber()
-		{
-			return $"{_random.Next(100, 999)}-{_random.Next(100, 999)}-{_random.Next(1000, 9999)}";
-		}
-		#endregion
-	}
+        void OnPullToRefreshCompleted() =>
+            PullToRefreshCompleted?.Invoke(this, EventArgs.Empty);
+        #endregion
+    }
 }

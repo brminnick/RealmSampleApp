@@ -1,20 +1,26 @@
 ﻿using System;
-using Realms;
+using System.Text;
 using System.Dynamic;
 using System.ComponentModel;
-using System.Text;
+
+using Realms;
+
 namespace RealmSampleApp
 {
-	public class ContactModel : RealmObject
-	{
-		#region Properties
-		public string FirstName { get; set; }
+    public class ContactModel : RealmObject
+    {
+        #region Constructors
+        public ContactModel() => Id = Guid.NewGuid().ToString();
+        #endregion
 
-		public string LastName { get; set; }
+        #region Properties
+        public string FullName => $"{FirstName} {LastName}";
 
-		public string PhoneNumber { get; set; }
-
-		public string FullName => $"{FirstName} {LastName}";
-		#endregion
-	}
+        [PrimaryKey]
+        public string Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string PhoneNumber { get; set; }
+        #endregion
+    }
 }
