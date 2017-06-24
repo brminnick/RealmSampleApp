@@ -16,17 +16,17 @@ namespace RealmSampleApp
             _contactModel = selectedContact;
             BindingContext = _contactModel;
 
-            var firstNameTextLabel = new Label { Text = "First Name" };
+            var firstNameTextLabel = new ContactDetailLabel { Text = "First Name" };
 
             var firstNameDataEntry = new ContactDetailEntry(canEdit);
             firstNameDataEntry.SetBinding(Entry.TextProperty, nameof(_contactModel.FirstName));
 
-            var lastNameTextLabel = new Label { Text = "Last Name" };
+            var lastNameTextLabel = new ContactDetailLabel { Text = "Last Name" };
 
             var lastNameDataEntry = new ContactDetailEntry(canEdit);
             lastNameDataEntry.SetBinding(Entry.TextProperty, nameof(_contactModel.LastName));
 
-            var phoneNumberTextLabel = new Label { Text = "Phone Number" };
+            var phoneNumberTextLabel = new ContactDetailLabel { Text = "Phone Number" };
 
             var phoneNumberDataEntry = new ContactDetailEntry(canEdit);
             phoneNumberDataEntry.SetBinding(Entry.TextProperty, nameof(_contactModel.PhoneNumber));
@@ -48,7 +48,7 @@ namespace RealmSampleApp
 
             Content = new StackLayout
             {
-                Margin = new Thickness(0, 5, 0, 0),
+                Margin = new Thickness(0, 10, 0, 0),
                 Children = {
                     firstNameTextLabel,
                     firstNameDataEntry,
@@ -87,7 +87,16 @@ namespace RealmSampleApp
         #region Classes
         class ContactDetailEntry : Entry
         {
-            public ContactDetailEntry(bool canEdit) => IsEnabled = canEdit;
+            public ContactDetailEntry(bool canEdit)
+            {
+                IsEnabled = canEdit;
+				TextColor = Color.FromHex("2B3E50");
+            }
+        }
+
+        class ContactDetailLabel : Label
+        {
+            public ContactDetailLabel() => TextColor = Color.FromHex("1B2A38");
         }
         #endregion
     }

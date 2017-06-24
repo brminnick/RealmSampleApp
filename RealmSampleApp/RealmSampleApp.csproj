@@ -35,10 +35,12 @@
     <Compile Include="ViewModels\ContactsListViewModel.cs" />
     <Compile Include="Pages\ContactDetailPage.cs" />
     <Compile Include="Services\ContactRealm.cs" />
-    <Compile Include="Views\ContactsListViewCell.cs" />
+    <Compile Include="Views\ContactsListTextCell.cs" />
     <Compile Include="ViewModels\ContactDetailViewModel.cs" />
-    <Compile Include="Pages\BaseContentPage.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="Constants\ColorConstants.cs" />
+    <Compile Include="Pages\Base\BaseContentPage.cs" />
+    <Compile Include="Pages\Base\BaseNavigationPage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Remotion.Linq">
@@ -79,6 +81,8 @@
     <Folder Include="Models\" />
     <Folder Include="Services\" />
     <Folder Include="Views\" />
+    <Folder Include="Constants\" />
+    <Folder Include="Pages\Base\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="..\packages\Fody.2.1.0\build\portable-net+sl+win+wpa+wp\Fody.targets" Condition="Exists('..\packages\Fody.2.1.0\build\portable-net+sl+win+wpa+wp\Fody.targets')" />

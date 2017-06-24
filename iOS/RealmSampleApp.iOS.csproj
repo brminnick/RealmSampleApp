@@ -149,7 +149,7 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <Compile Include="Custom Renderer\ContactsListViewCellCustomRenderer.cs" />
+    <Compile Include="Custom Renderer\ContactsListTextCellCustomRenderer.cs" />
     <Compile Include="Custom Renderer\ContactDetailsPageCustomRenderer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

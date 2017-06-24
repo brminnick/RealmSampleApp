@@ -9,7 +9,11 @@ namespace RealmSampleApp
         #endregion
 
         #region Constructors
-        protected BaseContentPage() => BindingContext = ViewModel;
+        protected BaseContentPage()
+        {
+            BindingContext = ViewModel;
+            BackgroundColor = ColorConstants.PageBackgroundColor;
+        }
         #endregion
 
         #region Properties

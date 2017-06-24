@@ -6,10 +6,10 @@ using Xamarin.Forms.Platform.iOS;
 using RealmSampleApp;
 using RealmSampleApp.iOS;
 
-[assembly: ExportRenderer(typeof(ContactsListViewCell), typeof(ContactsListViewCellCustomRenderer))]
+[assembly: ExportRenderer(typeof(ContactsListTextCell), typeof(ContactsListTextCellCustomRenderer))]
 namespace RealmSampleApp.iOS
 {
-	public class ContactsListViewCellCustomRenderer : TextCellRenderer
+	public class ContactsListTextCellCustomRenderer : TextCellRenderer
 	{
 		public override UITableViewCell GetCell(Cell item, UITableViewCell reusableCell, UITableView tv)
 		{

@@ -17,8 +17,9 @@ namespace RealmSampleApp
 
             _contactsListView = new ListView(ListViewCachingStrategy.RecycleElement)
             {
-                ItemTemplate = new DataTemplate(typeof(ContactsListViewCell)),
-                IsPullToRefreshEnabled = true
+                ItemTemplate = new DataTemplate(typeof(ContactsListTextCell)),
+                IsPullToRefreshEnabled = true,
+                BackgroundColor = Color.Transparent
             };
             _contactsListView.SetBinding(ListView.ItemsSourceProperty, nameof(ViewModel.AllContactsList));
             _contactsListView.SetBinding(ListView.RefreshCommandProperty, nameof(ViewModel.RefreshCommand));
@@ -66,7 +67,7 @@ namespace RealmSampleApp
         void HandleAddContactButtonClicked(object sender, EventArgs e)
         {
             Device.BeginInvokeOnMainThread(async () =>
-               await Navigation.PushModalAsync(new NavigationPage(new ContactDetailPage(new ContactModel(), true))));
+               await Navigation.PushModalAsync(new BaseNavigationPage(new ContactDetailPage(new ContactModel(), true))));
         }
 
         void HandlePullToRefreshCompleted(object sender, EventArgs e) =>
