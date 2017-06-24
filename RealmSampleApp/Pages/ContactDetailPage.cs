@@ -1,5 +1,7 @@
 ﻿using System;
 using Xamarin.Forms;
+using EntryCustomReturn.Forms.Plugin.Abstractions;
+using System.Threading.Tasks;
 
 namespace RealmSampleApp
 {
@@ -16,20 +18,34 @@ namespace RealmSampleApp
             _contactModel = selectedContact;
             BindingContext = _contactModel;
 
-            var firstNameTextLabel = new ContactDetailLabel { Text = "First Name" };
+            var phoneNumberDataEntry = new ContactDetailEntry(canEdit)
+            {
+                ReturnType = ReturnType.Go,
+                ReturnCommand = new Command(async () => await SaveContactAndPopPage())
+			};
+            phoneNumberDataEntry.SetBinding(Entry.TextProperty, nameof(_contactModel.PhoneNumber));
 
-            var firstNameDataEntry = new ContactDetailEntry(canEdit);
-            firstNameDataEntry.SetBinding(Entry.TextProperty, nameof(_contactModel.FirstName));
 
-            var lastNameTextLabel = new ContactDetailLabel { Text = "Last Name" };
-
-            var lastNameDataEntry = new ContactDetailEntry(canEdit);
+            var lastNameDataEntry = new ContactDetailEntry(canEdit)
+            {
+                ReturnType = ReturnType.Next,
+                ReturnCommand = new Command(() => phoneNumberDataEntry.Focus())
+            };
             lastNameDataEntry.SetBinding(Entry.TextProperty, nameof(_contactModel.LastName));
 
-            var phoneNumberTextLabel = new ContactDetailLabel { Text = "Phone Number" };
 
-            var phoneNumberDataEntry = new ContactDetailEntry(canEdit);
-            phoneNumberDataEntry.SetBinding(Entry.TextProperty, nameof(_contactModel.PhoneNumber));
+            var firstNameDataEntry = new ContactDetailEntry(canEdit)
+            {
+                ReturnType = ReturnType.Next,
+                ReturnCommand = new Command(() => lastNameDataEntry.Focus())
+            };
+            firstNameDataEntry.SetBinding(Entry.TextProperty, nameof(_contactModel.FirstName));
+
+
+
+            var phoneNumberTextLabel = new ContactDetailLabel { Text = "Phone Number" };
+            var lastNameTextLabel = new ContactDetailLabel { Text = "Last Name" };
+            var firstNameTextLabel = new ContactDetailLabel { Text = "First Name" };
 
             _saveToobarItem = new ToolbarItem { Text = "Save", Priority = 0 };
             _cancelToolbarItem = new ToolbarItem { Text = "Cancel", Priority = 1 };
@@ -74,23 +90,26 @@ namespace RealmSampleApp
             _saveToobarItem.Clicked -= HandleSaveToolbarItemClicked;
         }
 
-        async void HandleSaveToolbarItemClicked(object sender, EventArgs e)
+        async Task SaveContactAndPopPage()
         {
-            await ContactRealm.SaveContact(_contactModel);
-            PopPage();
+			await ContactRealm.SaveContact(_contactModel);
+			PopPage();
         }
+
+        async void HandleSaveToolbarItemClicked(object sender, EventArgs e) =>
+            await SaveContactAndPopPage();
 
         void HandleCancelToolBarItemClicked(object sender, EventArgs e) => PopPage();
         void PopPage() => Device.BeginInvokeOnMainThread(async () => await Navigation.PopModalAsync());
         #endregion
 
         #region Classes
-        class ContactDetailEntry : Entry
+        class ContactDetailEntry : CustomReturnEntry
         {
             public ContactDetailEntry(bool canEdit)
             {
                 IsEnabled = canEdit;
-				TextColor = Color.FromHex("2B3E50");
+                TextColor = Color.FromHex("2B3E50");
             }
         }
 

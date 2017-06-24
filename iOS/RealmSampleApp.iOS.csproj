@@ -122,6 +122,12 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\netstandard1.3\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="EntryCustomReturn.Forms.Plugin.Abstractions">
+      <HintPath>..\packages\Xam.Plugins.Forms.CustomReturnEntry.3.1.1\lib\Xamarin.iOS10\EntryCustomReturn.Forms.Plugin.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="EntryCustomReturn.Forms.Plugin.iOS">
+      <HintPath>..\packages\Xam.Plugins.Forms.CustomReturnEntry.3.1.1\lib\Xamarin.iOS10\EntryCustomReturn.Forms.Plugin.iOS.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RealmSampleApp\RealmSampleApp.csproj">
