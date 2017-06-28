@@ -1,7 +1,11 @@
 ﻿using System;
-using Xamarin.Forms;
-using EntryCustomReturn.Forms.Plugin.Abstractions;
 using System.Threading.Tasks;
+
+using Xamarin.Forms;
+
+using EntryCustomReturn.Forms.Plugin.Abstractions;
+
+using RealmSampleApp.Shared;
 
 namespace RealmSampleApp
 {
@@ -21,34 +25,44 @@ namespace RealmSampleApp
             var phoneNumberDataEntry = new ContactDetailEntry(canEdit)
             {
                 ReturnType = ReturnType.Go,
-                ReturnCommand = new Command(async () => await SaveContactAndPopPage())
-			};
+                ReturnCommand = new Command(async () => await SaveContactAndPopPage()),
+                AutomationId = AutomationIdConstants.PhoneNumberEntry
+            };
             phoneNumberDataEntry.SetBinding(Entry.TextProperty, nameof(_contactModel.PhoneNumber));
-
 
             var lastNameDataEntry = new ContactDetailEntry(canEdit)
             {
                 ReturnType = ReturnType.Next,
-                ReturnCommand = new Command(() => phoneNumberDataEntry.Focus())
+                ReturnCommand = new Command(() => phoneNumberDataEntry.Focus()),
+                AutomationId = AutomationIdConstants.LastNameEntry
             };
             lastNameDataEntry.SetBinding(Entry.TextProperty, nameof(_contactModel.LastName));
-
 
             var firstNameDataEntry = new ContactDetailEntry(canEdit)
             {
                 ReturnType = ReturnType.Next,
-                ReturnCommand = new Command(() => lastNameDataEntry.Focus())
+                ReturnCommand = new Command(() => lastNameDataEntry.Focus()),
+                AutomationId = AutomationIdConstants.FirstNameEntry
             };
             firstNameDataEntry.SetBinding(Entry.TextProperty, nameof(_contactModel.FirstName));
-
-
 
             var phoneNumberTextLabel = new ContactDetailLabel { Text = "Phone Number" };
             var lastNameTextLabel = new ContactDetailLabel { Text = "Last Name" };
             var firstNameTextLabel = new ContactDetailLabel { Text = "First Name" };
 
-            _saveToobarItem = new ToolbarItem { Text = "Save", Priority = 0 };
-            _cancelToolbarItem = new ToolbarItem { Text = "Cancel", Priority = 1 };
+            _saveToobarItem = new ToolbarItem
+            {
+                Text = "Save",
+                Priority = 0,
+                AutomationId = AutomationIdConstants.SaveContactButton
+            };
+
+            _cancelToolbarItem = new ToolbarItem
+            {
+                Text = "Cancel",
+                Priority = 1,
+                AutomationId = AutomationIdConstants.CancelContactButton
+            };
 
             switch (canEdit)
             {
@@ -58,7 +72,7 @@ namespace RealmSampleApp
                     break;
             }
 
-            Title = "Contact Details";
+            Title = PageTitles.ContactDetailsPage;
 
             Padding = new Thickness(20, 0, 20, 0);
 
@@ -92,8 +106,8 @@ namespace RealmSampleApp
 
         async Task SaveContactAndPopPage()
         {
-			await ContactRealm.SaveContact(_contactModel);
-			PopPage();
+            await ContactRealm.SaveContact(_contactModel);
+            PopPage();
         }
 
         async void HandleSaveToolbarItemClicked(object sender, EventArgs e) =>

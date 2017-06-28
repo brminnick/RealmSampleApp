@@ -1,5 +1,9 @@
 ﻿using System;
+
 using Xamarin.Forms;
+
+using RealmSampleApp.Shared;
+
 namespace RealmSampleApp
 {
     public class ContactsListPage : BaseContentPage<ContactsListViewModel>
@@ -12,7 +16,11 @@ namespace RealmSampleApp
         #region Constructors
         public ContactsListPage()
         {
-            _addContactButton = new ToolbarItem { Text = "+" };
+            _addContactButton = new ToolbarItem
+            {
+                Text = "+",
+                AutomationId = AutomationIdConstants.AddContactButon
+            };
             ToolbarItems.Add(_addContactButton);
 
             _contactsListView = new ListView(ListViewCachingStrategy.RecycleElement)
@@ -24,7 +32,7 @@ namespace RealmSampleApp
             _contactsListView.SetBinding(ListView.ItemsSourceProperty, nameof(ViewModel.AllContactsList));
             _contactsListView.SetBinding(ListView.RefreshCommandProperty, nameof(ViewModel.RefreshCommand));
 
-            Title = "Contacts";
+            Title = PageTitles.ContactsListPage;
 
             Content = _contactsListView;
         }

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealmSampleApp.Droid", "Dro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealmSampleApp.UITests", "UITests\RealmSampleApp.UITests.csproj", "{727B5150-D089-4084-95B7-9EF0863B4276}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "RealmSampleApp.Shared", "RealmSampleApp.Shared\RealmSampleApp.Shared.shproj", "{1005A14B-0E63-404C-A05B-677E6AACDA2E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
