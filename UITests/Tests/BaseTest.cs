@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+﻿ using NUnit.Framework;
 
 using Xamarin.UITest;
 
@@ -28,7 +28,7 @@ namespace RealmSampleApp.UITests
 
         #region Methods
         [SetUp]
-        virtual public void BeforeEachTest() => App.Screenshot("App Initialized");
+        protected virtual void BeforeEachTest() => App.Screenshot("App Initialized");
         #endregion
     }
 }

@@ -9,7 +9,7 @@ namespace RealmSampleApp.UITests
     public abstract class BasePage
     {
         #region Constant Fields
-        readonly string _pageTitle;
+        readonly string _pageTitleText;
         #endregion
 
         #region Constructors
@@ -20,12 +20,13 @@ namespace RealmSampleApp.UITests
             OnAndroid = platform == Platform.Android;
             OniOS = platform == Platform.iOS;
 
-            _pageTitle = pageTitle;
+            _pageTitleText = pageTitle;
         }
         #endregion
 
         #region Methods
-		protected string Title => GetTitle();
+        public string Title => GetTitle();
+
         protected IApp App { get; }
         protected bool OnAndroid { get; }
         protected bool OniOS { get; }
@@ -34,13 +35,19 @@ namespace RealmSampleApp.UITests
         #region Methods
         string GetTitle(int timeoutInSeconds = 60)
         {
-            App.WaitForElement(_pageTitle, "Could Not Retrieve Page Title", TimeSpan.FromSeconds(timeoutInSeconds));
+            App.WaitForElement(_pageTitleText, "Could Not Retrieve Page Title", TimeSpan.FromSeconds(timeoutInSeconds));
 
             AppResult[] titleQuery;
-            if (OniOS)
-                titleQuery = App.Query(x => x.Class("UILabel").Marked(_pageTitle));
-            else
-                titleQuery = App.Query(x => x.Class("AppCompatTextView").Marked(_pageTitle));
+            switch (OniOS)
+            {
+                case true:
+                    titleQuery = App.Query(x => x.Class("UILabel").Marked(_pageTitleText));
+                    break;
+
+                default:
+                    titleQuery = App.Query(x => x.Class("AppCompatTextView").Marked(_pageTitleText));
+                    break;
+            }
 
             return titleQuery?.FirstOrDefault()?.Text;
         }

@@ -11,7 +11,8 @@ namespace RealmSampleApp.UITests
     public class ContactDetailsPage : BasePage
     {
         #region Constant Fields
-        readonly Query _firstNameEntry, _lastNameEntry, _phoneNumberEntry, _saveButton, _cancelButton;
+        readonly Query _firstNameEntry, _lastNameEntry, _phoneNumberEntry, 
+            _saveButton, _cancelButton;
         #endregion
 
         #region Constructors
@@ -21,23 +22,69 @@ namespace RealmSampleApp.UITests
             _lastNameEntry = x => x.Marked(AutomationIdConstants.LastNameEntry);
             _phoneNumberEntry = x => x.Marked(AutomationIdConstants.PhoneNumberEntry);
             _saveButton = x => x.Marked(AutomationIdConstants.SaveContactButton);
-			_cancelButton = x => x.Marked(AutomationIdConstants.CancelContactButton);
+            _cancelButton = x => x.Marked(AutomationIdConstants.CancelContactButton);
         }
         #endregion
 
-        #region Properties
-        public bool IsRefreshActivityIndicatorDisplayed
+        #region Methods
+        public void EnterFirstNameText(string text, bool shouldUseReturnKey) =>
+            EnterText(_firstNameEntry, text, shouldUseReturnKey);
+
+        public void EnterLastNameText(string text, bool shouldUseReturnKey) =>
+            EnterText(_lastNameEntry, text, shouldUseReturnKey);
+
+        public void EnterPhoneNumberText(string text, bool shouldUseReturnKey) =>
+            EnterText(_phoneNumberEntry, text, shouldUseReturnKey);
+
+        public void PopulateAllTextFields(string firstName, string lastName, string phoneNumber, bool shouldUseReturnKey)
         {
-            get
+            EnterFirstNameText(firstName, shouldUseReturnKey);
+            EnterLastNameText(lastName, shouldUseReturnKey);
+            EnterPhoneNumberText(phoneNumber, shouldUseReturnKey);
+        }
+
+        public void TapSaveButton()
+        {
+            App.Tap(_saveButton);
+            App.Screenshot("Save Button Tapped");
+        }
+
+        public void TapCancelButton()
+        {
+            App.Tap(_cancelButton);
+            App.Screenshot("Cancel Button Tapped");
+        }
+
+        void EnterText(Query query, string text, bool shouldUseReturnKey)
+        {
+            switch (shouldUseReturnKey)
             {
-                if (OnAndroid)
-                    return (bool)App.Query(x => x.Class("SwipeRefreshLayout").Invoke("isRefreshing")).FirstOrDefault();
-
-                if (OniOS)
-                    return App.Query(x => x.Class("UIRefreshControl")).Any();
-
-                throw new Exception("Platform Not Recognized");
+                case true:
+                    EnterTextThenTapEnter(query, text);
+                    break;
+                default:
+                    EnterTextThenDismissKeyboard(query, text);
+                    break;
             }
+        }
+
+        void EnterTextThenDismissKeyboard(Query query, string text)
+        {
+            App.EnterText(query, text);
+            App.DismissKeyboard();
+            App.Screenshot($"Entered Text: {text}");
+        }
+
+        void EnterTextThenTapEnter(Query query, string text)
+        {
+            App.Tap(query);
+
+            App.ClearText();
+            App.EnterText(text);
+
+            App.Screenshot($"Entered Text: {text}");
+
+            App.PressEnter();
         }
         #endregion
     }
