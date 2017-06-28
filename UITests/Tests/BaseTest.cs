@@ -21,14 +21,14 @@ namespace RealmSampleApp.UITests
 
         #region Properties
 		protected Platform Platform => _platform;
-        protected IApp App => _app ?? (_app = AppInitializer.StartApp(Platform));
+        protected IApp App => _app;
         protected ContactsListPage ContactsListPage => _contactsListPage ?? (_contactsListPage = new ContactsListPage(App, Platform));
         protected ContactDetailsPage ContactDetailsPage => _contactsDetailsPage ?? (_contactsDetailsPage = new ContactDetailsPage(App, Platform));
         #endregion
 
         #region Methods
         [SetUp]
-        protected virtual void BeforeEachTest() => App.Screenshot("App Initialized");
+        protected virtual void BeforeEachTest() =>  _app = AppInitializer.StartApp(Platform);
         #endregion
     }
 }

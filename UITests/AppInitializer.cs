@@ -1,21 +1,18 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using Xamarin.UITest;
-using Xamarin.UITest.Queries;
+﻿using Xamarin.UITest;
+using Xamarin.UITest.Configuration;
 
 namespace RealmSampleApp.UITests
 {
-	public class AppInitializer
+    public static class AppInitializer
 	{
 		public static IApp StartApp(Platform platform)
 		{
 			if (platform == Platform.Android)
 			{
-				return ConfigureApp.Android.StartApp();
+				return ConfigureApp.Android.StartApp(AppDataMode.Clear);
 			}
 
-			return ConfigureApp.iOS.StartApp();
+			return ConfigureApp.iOS.StartApp(AppDataMode.Clear);
 		}
 	}
 }

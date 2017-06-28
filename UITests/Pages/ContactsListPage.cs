@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 
 using Xamarin.UITest;
 
@@ -19,17 +20,26 @@ namespace RealmSampleApp.UITests
         {
             _addContactButon = x => x.Marked(AutomationIdConstants.AddContactButon);
         }
-		#endregion
+        #endregion
 
-		#region Properties
-		public bool IsRefreshActivityIndicatorDisplayed =>
-			GetIsRefreshActivityIndicatorDisplayed();
-		#endregion
+        #region Properties
+        public bool IsRefreshActivityIndicatorDisplayed =>
+            GetIsRefreshActivityIndicatorDisplayed();
+        #endregion
 
-		#region Methods
-		public void TapAddContactButton()
+        #region Methods
+        public void TapAddContactButton()
         {
-            App.Tap(_addContactButon);
+            switch (OniOS)
+            {
+                case true:
+                    App.Tap(_addContactButon);
+                    break;
+                default:
+                    App.Tap(x => x.Class("ActionMenuItemView"));
+                    break;
+            }
+
             App.Screenshot("Tapped Add Contact Button");
         }
 
@@ -40,23 +50,35 @@ namespace RealmSampleApp.UITests
                 App.ScrollDownTo(fullName);
                 return true;
             }
-            catch(System.Exception e)
+            catch (System.Exception e)
             {
                 return false;
             }
         }
 
-		bool GetIsRefreshActivityIndicatorDisplayed()
+		public async Task WaitForNoPullToRefreshActivityIndicatorAsync()
 		{
-			switch (OniOS)
-			{
-				case true:
-					return App.Query(x => x.Class("UIRefreshControl")).Any();
-
-				default:
-					return (bool)App.Query(x => x.Class("SwipeRefreshLayout").Invoke("isRefreshing")).FirstOrDefault();
-			}
+            while (IsRefreshActivityIndicatorDisplayed)
+                await Task.Delay(10);
 		}
+
+		public async Task WaitForPullToRefreshActivityIndicatorAsync()
+		{
+			while (!IsRefreshActivityIndicatorDisplayed)
+				await Task.Delay(10);
+		}
+
+        bool GetIsRefreshActivityIndicatorDisplayed()
+        {
+            switch (OniOS)
+            {
+                case true:
+                    return App.Query(x => x.Class("UIRefreshControl")).Any();
+
+                default:
+                    return (bool)App.Query(x => x.Class("SwipeRefreshLayout").Invoke("isRefreshing")).FirstOrDefault();
+            }
+        }
         #endregion
     }
 }

@@ -54,6 +54,7 @@
     <Compile Include="Pages\ContactsListPage.cs" />
     <Compile Include="Pages\ContactDetailsPage.cs" />
     <Compile Include="Tests\Tests.cs" />
+    <Compile Include="Tests\ReplTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

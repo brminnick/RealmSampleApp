@@ -1,4 +1,4 @@
-﻿using System.Threading;
+﻿using System.Threading.Tasks;
 
 using NUnit.Framework;
 
@@ -23,7 +23,7 @@ namespace RealmSampleApp.UITests
 
         [TestCase("Brandon", "Minnick", "123-456-7890", true)]
         [TestCase("Brandon", "Minnick", "123-456-7890", false)]
-        public void AddContactTest(string firstName, string lastName, string phoneNumber, bool shouldUseReturnKey)
+        public async Task AddContactTest(string firstName, string lastName, string phoneNumber, bool shouldUseReturnKey)
         {
             ContactsListPage.TapAddContactButton();
 
@@ -31,24 +31,41 @@ namespace RealmSampleApp.UITests
 
             ContactDetailsPage.PopulateAllTextFields(firstName, lastName, phoneNumber, shouldUseReturnKey);
 
-            switch(shouldUseReturnKey)
+            switch (shouldUseReturnKey)
             {
                 case false:
                     ContactDetailsPage.TapSaveButton();
                     break;
             }
 
-            while (ContactsListPage.IsRefreshActivityIndicatorDisplayed)
-                Thread.Sleep(100);
+            await ContactsListPage.WaitForPullToRefreshActivityIndicatorAsync();
+            await ContactsListPage.WaitForNoPullToRefreshActivityIndicatorAsync();
 
             Assert.IsTrue(ContactsListPage.DoesViewCellExist($"{firstName} {lastName}"));
             Assert.IsTrue(ContactsListPage.DoesViewCellExist(phoneNumber));
+        }
+
+        [TestCase("Brandon", "Minnick", "123-456-7890")]
+        public async Task EnterContactInformationThenPressCancel(string firstName, string lastName, string phoneNumber)
+        {
+			ContactsListPage.TapAddContactButton();
+
+			App.WaitForElement(ContactDetailsPage.Title);
+
+			ContactDetailsPage.PopulateAllTextFields(firstName, lastName, phoneNumber, false);
+            ContactDetailsPage.TapCancelButton();
+
+			await ContactsListPage.WaitForPullToRefreshActivityIndicatorAsync();
+			await ContactsListPage.WaitForNoPullToRefreshActivityIndicatorAsync();
+
+            Assert.IsFalse(ContactsListPage.DoesViewCellExist($"{firstName} {lastName}"));
         }
 
         protected override void BeforeEachTest()
         {
             base.BeforeEachTest();
 
+            App.Screenshot("App Launched");
             App.WaitForElement(ContactsListPage.Title);
         }
         #endregion

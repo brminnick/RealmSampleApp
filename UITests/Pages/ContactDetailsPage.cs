@@ -11,7 +11,7 @@ namespace RealmSampleApp.UITests
     public class ContactDetailsPage : BasePage
     {
         #region Constant Fields
-        readonly Query _firstNameEntry, _lastNameEntry, _phoneNumberEntry, 
+        readonly Query _firstNameEntry, _lastNameEntry, _phoneNumberEntry,
             _saveButton, _cancelButton;
         #endregion
 
@@ -45,13 +45,33 @@ namespace RealmSampleApp.UITests
 
         public void TapSaveButton()
         {
-            App.Tap(_saveButton);
+			switch (OniOS)
+			{
+				case true:
+					App.Tap(_cancelButton);
+					break;
+
+				default:
+					App.Tap("Save");
+					break;
+			}
+
             App.Screenshot("Save Button Tapped");
         }
 
         public void TapCancelButton()
         {
-            App.Tap(_cancelButton);
+            switch (OniOS)
+            {
+                case true:
+                    App.Tap(_cancelButton);
+                    break;
+                
+                default:
+                    App.Tap("Cancel");
+                    break;
+            }
+
             App.Screenshot("Cancel Button Tapped");
         }
 
