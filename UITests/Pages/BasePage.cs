@@ -24,7 +24,7 @@ namespace RealmSampleApp.UITests
         }
         #endregion
 
-        #region Methods
+        #region Properties
         public string Title => GetTitle();
 
         protected IApp App { get; }
