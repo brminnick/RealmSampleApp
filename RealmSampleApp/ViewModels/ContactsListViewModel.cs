@@ -5,8 +5,6 @@ using System.Collections.Generic;
 
 using Xamarin.Forms;
 
-using RandomNameGenerator;
-
 namespace RealmSampleApp
 {
     public class ContactsListViewModel : BaseViewModel

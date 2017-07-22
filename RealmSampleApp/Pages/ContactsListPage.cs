@@ -2,7 +2,7 @@
 
 using Xamarin.Forms;
 
-using RealmSampleApp.Shared;
+using RealmSampleApp.Constants;
 
 namespace RealmSampleApp
 {

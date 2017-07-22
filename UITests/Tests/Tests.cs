@@ -46,7 +46,7 @@ namespace RealmSampleApp.UITests
         }
 
         [TestCase("Brandon", "Minnick", "123-456-7890")]
-        public async Task EnterContactInformationThenPressCancel(string firstName, string lastName, string phoneNumber)
+        public void EnterContactInformationThenPressCancel(string firstName, string lastName, string phoneNumber)
         {
 			ContactsListPage.TapAddContactButton();
 
@@ -54,9 +54,6 @@ namespace RealmSampleApp.UITests
 
 			ContactDetailsPage.PopulateAllTextFields(firstName, lastName, phoneNumber, false);
             ContactDetailsPage.TapCancelButton();
-
-			await ContactsListPage.WaitForPullToRefreshActivityIndicatorAsync();
-			await ContactsListPage.WaitForNoPullToRefreshActivityIndicatorAsync();
 
             Assert.IsFalse(ContactsListPage.DoesViewCellExist($"{firstName} {lastName}"));
         }
