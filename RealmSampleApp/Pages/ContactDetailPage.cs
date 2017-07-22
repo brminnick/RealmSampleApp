@@ -5,7 +5,7 @@ using Xamarin.Forms;
 
 using EntryCustomReturn.Forms.Plugin.Abstractions;
 
-using RealmSampleApp.Shared;
+using RealmSampleApp.Constants;
 
 namespace RealmSampleApp
 {

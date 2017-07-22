@@ -1,5 +1,4 @@
-﻿using System;
-namespace RealmSampleApp.Shared
+﻿namespace RealmSampleApp.Constants
 {
     public static class PageTitles
     {

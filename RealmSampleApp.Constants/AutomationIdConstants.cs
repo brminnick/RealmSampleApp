@@ -1,4 +1,4 @@
-﻿namespace RealmSampleApp.Shared
+﻿namespace RealmSampleApp.Constants
 {
     public static class AutomationIdConstants
     {

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using Xamarin.UITest;
 
-using Xamarin.UITest;
-using RealmSampleApp.Shared;
+using RealmSampleApp.Constants;
 
 using Query = System.Func<Xamarin.UITest.Queries.AppQuery, Xamarin.UITest.Queries.AppQuery>;
 
@@ -48,7 +46,7 @@ namespace RealmSampleApp.UITests
 			switch (OniOS)
 			{
 				case true:
-					App.Tap(_cancelButton);
+					App.Tap(_saveButton);
 					break;
 
 				default:

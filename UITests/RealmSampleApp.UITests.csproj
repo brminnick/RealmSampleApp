@@ -46,6 +46,10 @@
       <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\RealmSampleApp.Constants\RealmSampleApp.Constants.csproj">
+      <Project>{C435B691-9E13-4410-AADB-2FDE71290194}</Project>
+      <Name>RealmSampleApp.Constants</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppInitializer.cs" />
@@ -63,6 +67,5 @@
     <Folder Include="Pages\" />
     <Folder Include="Tests\" />
   </ItemGroup>
-  <Import Project="..\RealmSampleApp.Shared\RealmSampleApp.Shared.projitems" Label="Shared" Condition="Exists('..\RealmSampleApp.Shared\RealmSampleApp.Shared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -3,9 +3,10 @@ using System.Threading.Tasks;
 
 using Xamarin.UITest;
 
-using RealmSampleApp.Shared;
+using RealmSampleApp.Constants;
 
 using Query = System.Func<Xamarin.UITest.Queries.AppQuery, Xamarin.UITest.Queries.AppQuery>;
+using NUnit.Framework;
 
 namespace RealmSampleApp.UITests
 {
@@ -56,17 +57,33 @@ namespace RealmSampleApp.UITests
             }
         }
 
-		public async Task WaitForNoPullToRefreshActivityIndicatorAsync()
-		{
-            while (IsRefreshActivityIndicatorDisplayed)
-                await Task.Delay(10);
-		}
+        public async Task WaitForNoPullToRefreshActivityIndicatorAsync(int timeoutInSeconds = 10)
+        {
+            int loopCount = 0;
 
-		public async Task WaitForPullToRefreshActivityIndicatorAsync()
-		{
-			while (!IsRefreshActivityIndicatorDisplayed)
-				await Task.Delay(10);
-		}
+            while (IsRefreshActivityIndicatorDisplayed)
+            {
+				if (loopCount / 10 > timeoutInSeconds)
+					Assert.Fail("WaitForNoPullToRefreshActivityIndicatorAsync Failed");
+
+                loopCount++;
+                await Task.Delay(100);
+            }
+        }
+
+        public async Task WaitForPullToRefreshActivityIndicatorAsync(int timeoutInSeconds = 10)
+        {
+            int loopCount = 0;
+
+            while (!IsRefreshActivityIndicatorDisplayed)
+            {
+                if (loopCount / 10 > timeoutInSeconds)
+                    Assert.Fail("WaitForPullToRefreshActivityIndicatorAsync Failed");
+
+                loopCount++;
+                await Task.Delay(100);
+            }
+        }
 
         bool GetIsRefreshActivityIndicatorDisplayed()
         {
