@@ -27,9 +27,9 @@ namespace RealmSampleApp
             get => _allContactsList;
             set => SetProperty(ref _allContactsList, value);
         }
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
         ContactModel GenerateRandomContactModel()
         {
             var random = new Random((int)DateTime.Now.Ticks);
@@ -53,41 +53,45 @@ namespace RealmSampleApp
                 $"{random.Next(100, 999)}-{random.Next(100, 999)}-{random.Next(1000, 9999)}";
         }
 
-		string ToPascalCase(string text)
-		{
-			if (string.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(text))
-				return string.Empty;
+        string ToPascalCase(string text)
+        {
+            if (string.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(text))
+                return string.Empty;
 
-			string lowerCaseText = text.ToLower();
+            string lowerCaseText = text.ToLower();
 
-			string[] splits = lowerCaseText.Split(' ');
+            string[] splits = lowerCaseText.Split(' ');
 
-			for (int i = 0; i < splits.Length; i++)
-			{
-				switch (splits[i].Length)
-				{
-					case 1:
-						break;
+            for (int i = 0; i < splits.Length; i++)
+            {
+                switch (splits[i].Length)
+                {
+                    case 1:
+                        break;
 
-					default:
-						splits[i] = char.ToUpper(splits[i][0]) + splits[i].Substring(1);
-						break;
-				}
-			}
+                    default:
+                        splits[i] = char.ToUpper(splits[i][0]) + splits[i].Substring(1);
+                        break;
+                }
+            }
 
-			return string.Join(" ", splits);
+            return string.Join(" ", splits);
 
-		}
+        }
 
         async Task ExecuteRefreshCommand()
         {
-            if (ContactRealm.Count < 4)
-            {
-                for (int i = 0; i < 4; i++)
-                    await ContactRealm.SaveContact(GenerateRandomContactModel());
-            }
+            var minimumRefreshTime = Task.Delay(1000);
+
+            var contactCount = ContactRealm.Count;
+
+            for (int i = 0; i < 4 - contactCount; i++)
+                await ContactRealm.SaveContact(GenerateRandomContactModel());
 
             AllContactsList = ContactRealm.AllContacts;
+
+            await minimumRefreshTime;
+
             OnPullToRefreshCompleted();
         }
 

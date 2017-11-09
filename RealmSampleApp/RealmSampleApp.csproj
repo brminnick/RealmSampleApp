@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>netstandard1.4</TargetFramework>
-		<PackageTargetFallback>portable-win+net45+wp80+win81+wpa81</PackageTargetFallback>
+		<TargetFramework>netstandard2.0</TargetFramework>
 	</PropertyGroup>
 	<ItemGroup>
 		<Folder Include="Constants\" />
@@ -13,11 +12,9 @@
 		<Folder Include="Views\" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\RealmSampleApp.Constants\RealmSampleApp.Constants.csproj" />
+		<PackageReference Include="Xamarin.Forms" Version="2.4.0.38779" />
+		<PackageReference Include="Realm" Version="2.0.0" />
+		<PackageReference Include="Xam.Plugins.Forms.CustomReturnEntry" Version="3.1.2" />
 	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="Xamarin.Forms" Version="2.3.5.256-pre6" />
-		<PackageReference Include="Realm" Version="1.5.0" />
-		<PackageReference Include="Xam.Plugins.Forms.CustomReturnEntry" Version="3.1.1" />
-	</ItemGroup>
+	<Import Project="..\RealmSampleApp.Shared\RealmSampleApp.Shared.projitems" Label="Shared" Condition="Exists('..\RealmSampleApp.Shared\RealmSampleApp.Shared.projitems')" />
 </Project>

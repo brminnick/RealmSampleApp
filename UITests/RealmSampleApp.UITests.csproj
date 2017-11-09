@@ -26,11 +26,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="Xamarin.UITest">
-      <HintPath>..\packages\Xamarin.UITest.2.0.9\lib\Xamarin.UITest.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.UITest">
+      <HintPath>..\packages\Xamarin.UITest.2.2.0\lib\net45\Xamarin.UITest.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -45,10 +45,6 @@
       <Name>RealmSampleApp.Droid</Name>
       <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
       <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\RealmSampleApp.Constants\RealmSampleApp.Constants.csproj">
-      <Project>{C435B691-9E13-4410-AADB-2FDE71290194}</Project>
-      <Name>RealmSampleApp.Constants</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -67,5 +63,6 @@
     <Folder Include="Pages\" />
     <Folder Include="Tests\" />
   </ItemGroup>
+  <Import Project="..\RealmSampleApp.Shared\RealmSampleApp.Shared.projitems" Label="Shared" Condition="Exists('..\RealmSampleApp.Shared\RealmSampleApp.Shared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
