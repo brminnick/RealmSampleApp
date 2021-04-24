@@ -2,30 +2,33 @@
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using AsyncAwaitBestPractices;
 
 namespace RealmSampleApp
 {
-	public abstract class BaseViewModel : INotifyPropertyChanged
-	{
-		#region Events
-		public event PropertyChangedEventHandler PropertyChanged;
-		#endregion
+    abstract class BaseViewModel : INotifyPropertyChanged
+    {
+        readonly WeakEventManager _propertyChangedEventManager = new();
 
-		#region Methods
-		protected void SetProperty<T>(ref T backingStore, T value, Action onChanged = null, [CallerMemberName] string propertyname = "")
-		{
-			if (EqualityComparer<T>.Default.Equals(backingStore, value))
-				return;
+        event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+        {
+            add => _propertyChangedEventManager.AddEventHandler(value);
+            remove => _propertyChangedEventManager.RemoveEventHandler(value);
+        }
 
-			backingStore = value;
+        protected void SetProperty<T>(ref T backingStore, T value, Action? onChanged = null, [CallerMemberName] string propertyname = "")
+        {
+            if (EqualityComparer<T>.Default.Equals(backingStore, value))
+                return;
 
-			onChanged?.Invoke();
+            backingStore = value;
 
-			OnPropertyChanged(propertyname);
-		}
+            onChanged?.Invoke();
 
-		void OnPropertyChanged([CallerMemberName]string propertyName = "") =>
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		#endregion
-	}
+            OnPropertyChanged(propertyname);
+        }
+
+        void OnPropertyChanged([CallerMemberName] string propertyName = "") =>
+            _propertyChangedEventManager.RaiseEvent(this, new PropertyChangedEventArgs(propertyName), nameof(INotifyPropertyChanged.PropertyChanged));
+    }
 }

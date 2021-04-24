@@ -11,6 +11,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealmSampleApp", "RealmSamp
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "RealmSampleApp.Shared", "RealmSampleApp.Shared\RealmSampleApp.Shared.shproj", "{4016F8D2-3881-4B82-B4D8-EC51F327296B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E8AB98DF-46FE-4427-96D0-3B99041D0FA3}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

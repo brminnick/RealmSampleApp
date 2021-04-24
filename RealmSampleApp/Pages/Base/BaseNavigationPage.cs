@@ -2,7 +2,7 @@
 
 namespace RealmSampleApp
 {
-    public class BaseNavigationPage : NavigationPage
+    class BaseNavigationPage : NavigationPage
     {
         public BaseNavigationPage(ContentPage root) : base(root)
         {

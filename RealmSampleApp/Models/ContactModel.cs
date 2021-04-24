@@ -1,23 +1,25 @@
 ﻿using System;
-
+using System.ComponentModel;
 using Realms;
 
 namespace RealmSampleApp
 {
     public class ContactModel : RealmObject
     {
-        #region Constructors
         public ContactModel() => Id = Guid.NewGuid().ToString();
-        #endregion
 
-        #region Properties
         public string FullName => $"{FirstName} {LastName}";
 
         [PrimaryKey]
-        public string Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string PhoneNumber { get; set; }
-        #endregion
+        public string Id { get; init; }
+        public string FirstName { get; init; } = string.Empty;
+        public string LastName { get; init; } = string.Empty;
+        public string PhoneNumber { get; init; } = string.Empty;
     }
+}
+
+namespace System.Runtime.CompilerServices
+{
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public record IsExternalInit;
 }

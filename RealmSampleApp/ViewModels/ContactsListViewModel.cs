@@ -1,35 +1,37 @@
 ﻿using System;
-using System.Windows.Input;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-
-using Xamarin.Forms;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using AsyncAwaitBestPractices;
+using AsyncAwaitBestPractices.MVVM;
 
 namespace RealmSampleApp
 {
-    public class ContactsListViewModel : BaseViewModel
+    class ContactsListViewModel : BaseViewModel
     {
-        #region Fields
-        ICommand _refreshCommand;
-        IList<ContactModel> _allContactsList;
-        #endregion
+        readonly WeakEventManager pullToRefreshCompletedEventManager = new();
 
-        #region Events
-        public event EventHandler PullToRefreshCompleted;
-        #endregion
+        IReadOnlyList<ContactModel> _allContactsList = Array.Empty<ContactModel>();
 
-        #region Properties
-        public ICommand RefreshCommand => _refreshCommand ??
-            (_refreshCommand = new Command(async () => await ExecuteRefreshCommand()));
+        public ContactsListViewModel()
+        {
+            RefreshCommand = new AsyncCommand(ExecuteRefreshCommand);
+        }
 
-        public IList<ContactModel> AllContactsList
+        public event EventHandler PullToRefreshCompleted
+        {
+            add => pullToRefreshCompletedEventManager.AddEventHandler(value);
+            remove => pullToRefreshCompletedEventManager.RemoveEventHandler(value);
+        }
+
+        public ICommand RefreshCommand { get; }
+
+        public IReadOnlyList<ContactModel> AllContactsList
         {
             get => _allContactsList;
             set => SetProperty(ref _allContactsList, value);
         }
-        #endregion
 
-        #region Methods
         ContactModel GenerateRandomContactModel()
         {
             var random = new Random((int)DateTime.Now.Ticks);
@@ -70,7 +72,7 @@ namespace RealmSampleApp
                         break;
 
                     default:
-                        splits[i] = char.ToUpper(splits[i][0]) + splits[i].Substring(1);
+                        splits[i] = char.ToUpper(splits[i][0]) + splits[i][1..];
                         break;
                 }
             }
@@ -90,13 +92,11 @@ namespace RealmSampleApp
 
             AllContactsList = ContactRealm.AllContacts;
 
-            await minimumRefreshTime;
+            await minimumRefreshTime.ConfigureAwait(false);
 
             OnPullToRefreshCompleted();
         }
 
-        void OnPullToRefreshCompleted() =>
-            PullToRefreshCompleted?.Invoke(this, EventArgs.Empty);
-        #endregion
+        void OnPullToRefreshCompleted() => pullToRefreshCompletedEventManager.RaiseEvent(this, EventArgs.Empty, nameof(PullToRefreshCompleted));
     }
 }

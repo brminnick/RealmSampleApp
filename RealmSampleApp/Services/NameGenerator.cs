@@ -1,16 +1,12 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Collections.Generic;
 
 namespace RealmSampleApp
 {
     public static class NameGenerator
     {
-        #region Constant Fields
-        private static readonly Lazy<List<string>> _gentelmenNameListHolder = new Lazy<List<string>>(() =>
-            new List<string>{
+        static readonly Lazy<IReadOnlyList<string>> _gentelmenNameListHolder = new(() => new[]
+        {
                 "AARON",
                 "ABEL",
                 "ABRAHAM",
@@ -803,8 +799,8 @@ namespace RealmSampleApp
                 "ZACHARY",
                 "ZACHERY"});
 
-        private static Lazy<List<string>> _ladiesNameListHolder = new Lazy<List<string>>(() =>
-            new List<string> {
+        static readonly Lazy<IReadOnlyList<string>> _ladiesNameListHolder = new(new[]
+        {
                 "ABBIE",
                 "ABBY",
                 "ABIGAIL",
@@ -1861,8 +1857,8 @@ namespace RealmSampleApp
                 "ZELDA",
                 "ZELMA"});
 
-        private static Lazy<List<string>> _lastNamesListHolder = new Lazy<List<string>>(() =>
-            new List<string> {
+        static readonly Lazy<IReadOnlyList<string>> _lastNamesListHolder = new(new[]
+        {
                 "SMITH",
                 "JOHNSON",
                 "WILLIAMS",
@@ -3863,37 +3859,26 @@ namespace RealmSampleApp
                 "FLOOD",
                 "STRINGER"});
 
-        private static readonly Random _random = new Random((int)DateTime.Now.Ticks);
-        #endregion
+        static readonly Random _random = new((int)DateTime.Now.Ticks);
 
-        #region Properties
-        static List<string> LastNameList => _lastNamesListHolder.Value;
-        static List<string> LadiesNameList => _ladiesNameListHolder.Value;
-        static List<string> GentelmenNameList => _gentelmenNameListHolder.Value;
-        #endregion
+        static IReadOnlyList<string> LastNameList => _lastNamesListHolder.Value;
+        static IReadOnlyList<string> LadiesNameList => _ladiesNameListHolder.Value;
+        static IReadOnlyList<string> GentelmenNameList => _gentelmenNameListHolder.Value;
 
-        #region Methods
-        public static string Generate(Gender gender) =>
-            string.Format("{0} {1}", GenerateFirstName(gender), GenerateLastName());
+        public static string Generate(Gender gender) => $"{GenerateFirstName(gender)} {GenerateLastName()}";
 
-        public static string GenerateLastName() =>
-            LastNameList[_random.Next(0, LastNameList.Count)];
+        public static string GenerateLastName() => LastNameList[_random.Next(0, LastNameList.Count)];
 
-        public static string GenerateFirstName(Gender gender)
+        public static string GenerateFirstName(Gender gender) => gender switch
         {
-            if (gender == Gender.Male)
-                return GenerateGentlemanName();
+            Gender.Male => GenerateGentlemanName(),
+            Gender.Female => GenerateLadyName(),
+            _ => throw new NotSupportedException()
+        };
 
-            return GenerateLadyName();
-        }
+        static string GenerateGentlemanName() => GentelmenNameList[_random.Next(0, GentelmenNameList.Count)];
 
-        static string GenerateGentlemanName() =>
-            GentelmenNameList[_random.Next(0, GentelmenNameList.Count)];
-
-        static string GenerateLadyName() =>
-            LadiesNameList[_random.Next(0, LadiesNameList.Count)];
-        #endregion
-
+        static string GenerateLadyName() => LadiesNameList[_random.Next(0, LadiesNameList.Count)];
     }
 
     public enum Gender
