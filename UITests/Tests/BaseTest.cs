@@ -1,35 +1,33 @@
-﻿ using NUnit.Framework;
-
+﻿using System;
+using NUnit.Framework;
 using Xamarin.UITest;
 
 namespace RealmSampleApp.UITests
 {
     [TestFixture(Platform.iOS)]
     [TestFixture(Platform.Android)]
-    public abstract class BaseTest
+    abstract class BaseTest
     {
-        #region Fields
-        IApp _app;
-        Platform _platform;
-        ContactsListPage _contactsListPage;
-        ContactDetailsPage _contactsDetailsPage;
-        #endregion
+        IApp? _app;
+        ContactsListPage? _contactsListPage;
+        ContactDetailsPage? _contactsDetailsPage;
 
-        #region Constructors
-        protected BaseTest(Platform platform) => _platform = platform;
-        #endregion
+        protected BaseTest(Platform platform) => Platform = platform;
 
-        #region Properties
-		protected Platform Platform => _platform;
-        protected IApp App => _app;
-        protected ContactsListPage ContactsListPage => _contactsListPage ?? (_contactsListPage = new ContactsListPage(App, Platform));
-        protected ContactDetailsPage ContactDetailsPage => _contactsDetailsPage ?? (_contactsDetailsPage = new ContactDetailsPage(App, Platform));
-        #endregion
+        protected IApp App => _app ?? throw new NullReferenceException();
+        protected ContactsListPage ContactsListPage => _contactsListPage ?? throw new NullReferenceException();
+        protected ContactDetailsPage ContactDetailsPage => _contactsDetailsPage ?? throw new NullReferenceException();
 
-        #region Methods
+        protected Platform Platform { get; }
+
         [SetUp]
-        protected virtual void BeforeEachTest() =>  _app = AppInitializer.StartApp(Platform);
-        #endregion
+        protected virtual void BeforeEachTest()
+        {
+            _app = AppInitializer.StartApp(Platform);
+
+            _contactsListPage = new ContactsListPage(App);
+            _contactsDetailsPage = new ContactDetailsPage(App);
+        }
     }
 }
 

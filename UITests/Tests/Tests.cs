@@ -1,20 +1,15 @@
 ﻿using System.Threading.Tasks;
-
 using NUnit.Framework;
-
 using Xamarin.UITest;
 
 namespace RealmSampleApp.UITests
 {
-    public class Tests : BaseTest
+    class Tests : BaseTest
     {
-        #region Constructors
         public Tests(Platform platform) : base(platform)
         {
         }
-        #endregion
 
-        #region Methods
         [Test]
         public void AppLaunches()
         {
@@ -31,12 +26,8 @@ namespace RealmSampleApp.UITests
 
             ContactDetailsPage.PopulateAllTextFields(firstName, lastName, phoneNumber, shouldUseReturnKey);
 
-            switch (shouldUseReturnKey)
-            {
-                case false:
-                    ContactDetailsPage.TapSaveButton();
-                    break;
-            }
+            if (!shouldUseReturnKey)
+                ContactDetailsPage.TapSaveButton();
 
             await ContactsListPage.WaitForPullToRefreshActivityIndicatorAsync();
             await ContactsListPage.WaitForNoPullToRefreshActivityIndicatorAsync();
@@ -48,11 +39,11 @@ namespace RealmSampleApp.UITests
         [TestCase("Brandon", "Minnick", "123-456-7890")]
         public void EnterContactInformationThenPressCancel(string firstName, string lastName, string phoneNumber)
         {
-			ContactsListPage.TapAddContactButton();
+            ContactsListPage.TapAddContactButton();
 
-			App.WaitForElement(ContactDetailsPage.Title);
+            App.WaitForElement(ContactDetailsPage.Title);
 
-			ContactDetailsPage.PopulateAllTextFields(firstName, lastName, phoneNumber, false);
+            ContactDetailsPage.PopulateAllTextFields(firstName, lastName, phoneNumber, false);
             ContactDetailsPage.TapCancelButton();
 
             Assert.IsFalse(ContactsListPage.DoesViewCellExist($"{firstName} {lastName}"));
@@ -65,6 +56,5 @@ namespace RealmSampleApp.UITests
             App.Screenshot("App Launched");
             App.WaitForElement(ContactsListPage.Title);
         }
-        #endregion
     }
 }

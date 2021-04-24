@@ -1,57 +1,39 @@
 ﻿using System;
 using System.Linq;
-
 using Xamarin.UITest;
+using Xamarin.UITest.Android;
+using Xamarin.UITest.iOS;
 using Xamarin.UITest.Queries;
 
 namespace RealmSampleApp.UITests
 {
     public abstract class BasePage
     {
-        #region Constant Fields
         readonly string _pageTitleText;
-        #endregion
 
-        #region Constructors
-        protected BasePage(IApp app, Platform platform, string pageTitle)
+        protected BasePage(IApp app, string pageTitle)
         {
             App = app;
-
-            OnAndroid = platform == Platform.Android;
-            OniOS = platform == Platform.iOS;
-
             _pageTitleText = pageTitle;
         }
-        #endregion
 
-        #region Properties
         public string Title => GetTitle();
 
         protected IApp App { get; }
-        protected bool OnAndroid { get; }
-        protected bool OniOS { get; }
-        #endregion
 
-        #region Methods
-        string GetTitle(int timeoutInSeconds = 60)
+        string GetTitle(TimeSpan? timeout = null)
         {
-            App.WaitForElement(_pageTitleText, "Could Not Retrieve Page Title", TimeSpan.FromSeconds(timeoutInSeconds));
+            App.WaitForElement(_pageTitleText, "Could Not Retrieve Page Title", timeout);
 
-            AppResult[] titleQuery;
-            switch (OniOS)
+            AppResult[] titleQuery = App switch
             {
-                case true:
-                    titleQuery = App.Query(x => x.Class("UILabel").Marked(_pageTitleText));
-                    break;
+                iOSApp => App.Query(x => x.Class("UILabel").Marked(_pageTitleText)),
+                AndroidApp => App.Query(x => x.Class("AppCompatTextView").Marked(_pageTitleText)),
+                _ => throw new NotSupportedException()
+            };
 
-                default:
-                    titleQuery = App.Query(x => x.Class("AppCompatTextView").Marked(_pageTitleText));
-                    break;
-            }
-
-            return titleQuery?.FirstOrDefault()?.Text;
+            return titleQuery.First().Text;
         }
-        #endregion
     }
 }
 

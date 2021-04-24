@@ -5,10 +5,10 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
-		<PackageReference Include="Realm" Version="2.0.0" />
 		<PackageReference Include="Xamarin.CommunityToolkit.Markup" Version="1.1.0" />
 		<PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
 		<PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="5.1.0" />
+		<PackageReference Include="Realm" Version="2.0.0" />
 	</ItemGroup>
 	<Import Project="..\RealmSampleApp.Shared\RealmSampleApp.Shared.projitems" Label="Shared" Condition="Exists('..\RealmSampleApp.Shared\RealmSampleApp.Shared.projitems')" />
 </Project>

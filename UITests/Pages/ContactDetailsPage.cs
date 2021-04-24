@@ -1,20 +1,18 @@
-﻿using Xamarin.UITest;
-
+﻿using System;
 using RealmSampleApp.Constants;
-
+using Xamarin.UITest;
+using Xamarin.UITest.Android;
+using Xamarin.UITest.iOS;
 using Query = System.Func<Xamarin.UITest.Queries.AppQuery, Xamarin.UITest.Queries.AppQuery>;
 
 namespace RealmSampleApp.UITests
 {
-    public class ContactDetailsPage : BasePage
+    class ContactDetailsPage : BasePage
     {
-        #region Constant Fields
         readonly Query _firstNameEntry, _lastNameEntry, _phoneNumberEntry,
             _saveButton, _cancelButton;
-        #endregion
 
-        #region Constructors
-        public ContactDetailsPage(IApp app, Platform platform) : base(app, platform, PageTitles.ContactDetailsPage)
+        public ContactDetailsPage(IApp app) : base(app, PageTitles.ContactDetailsPage)
         {
             _firstNameEntry = x => x.Marked(AutomationIdConstants.FirstNameEntry);
             _lastNameEntry = x => x.Marked(AutomationIdConstants.LastNameEntry);
@@ -22,9 +20,7 @@ namespace RealmSampleApp.UITests
             _saveButton = x => x.Marked(AutomationIdConstants.SaveContactButton);
             _cancelButton = x => x.Marked(AutomationIdConstants.CancelContactButton);
         }
-        #endregion
 
-        #region Methods
         public void EnterFirstNameText(string text, bool shouldUseReturnKey) =>
             EnterText(_firstNameEntry, text, shouldUseReturnKey);
 
@@ -43,47 +39,35 @@ namespace RealmSampleApp.UITests
 
         public void TapSaveButton()
         {
-			switch (OniOS)
-			{
-				case true:
-					App.Tap(_saveButton);
-					break;
-
-				default:
-					App.Tap("Save");
-					break;
-			}
+            if (App is iOSApp)
+                App.Tap(_saveButton);
+            else if (App is AndroidApp)
+                App.Tap("Save");
+            else
+                throw new NotSupportedException();
 
             App.Screenshot("Save Button Tapped");
         }
 
         public void TapCancelButton()
         {
-            switch (OniOS)
-            {
-                case true:
-                    App.Tap(_cancelButton);
-                    break;
-                
-                default:
-                    App.Tap("Cancel");
-                    break;
-            }
+            if (App is iOSApp)
+                App.Tap(_cancelButton);
+
+            else if (App is AndroidApp)
+                App.Tap("Cancel");
+            else
+                throw new NotSupportedException();
 
             App.Screenshot("Cancel Button Tapped");
         }
 
         void EnterText(Query query, string text, bool shouldUseReturnKey)
         {
-            switch (shouldUseReturnKey)
-            {
-                case true:
-                    EnterTextThenTapEnter(query, text);
-                    break;
-                default:
-                    EnterTextThenDismissKeyboard(query, text);
-                    break;
-            }
+            if (shouldUseReturnKey)
+                EnterTextThenTapEnter(query, text);
+            else
+                EnterTextThenDismissKeyboard(query, text);
         }
 
         void EnterTextThenDismissKeyboard(Query query, string text)
@@ -104,6 +88,5 @@ namespace RealmSampleApp.UITests
 
             App.PressEnter();
         }
-        #endregion
     }
 }

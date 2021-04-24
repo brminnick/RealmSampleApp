@@ -1,20 +1,16 @@
 ﻿using NUnit.Framework;
-
 using Xamarin.UITest;
 
 namespace RealmSampleApp.UITests
 {
-    public class ReplTests : BaseTest
+    class ReplTests : BaseTest
     {
         public ReplTests(Platform platform) : base(platform)
         {
         }
 
-        [Ignore]
+        [Ignore("Only for testing")]
         [Test]
-        public void Repl()
-        {
-            App.Repl();
-        }
+        public void Repl() => App.Repl();
     }
 }

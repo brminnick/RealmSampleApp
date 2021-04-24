@@ -1,45 +1,35 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
-
-using Xamarin.UITest;
-
-using RealmSampleApp.Constants;
-
-using Query = System.Func<Xamarin.UITest.Queries.AppQuery, Xamarin.UITest.Queries.AppQuery>;
 using NUnit.Framework;
+using RealmSampleApp.Constants;
+using Xamarin.UITest;
+using Xamarin.UITest.Android;
+using Xamarin.UITest.iOS;
+using Query = System.Func<Xamarin.UITest.Queries.AppQuery, Xamarin.UITest.Queries.AppQuery>;
 
 namespace RealmSampleApp.UITests
 {
-    public class ContactsListPage : BasePage
+    class ContactsListPage : BasePage
     {
-        #region Constant Fields
         readonly Query _addContactButon;
-        #endregion
 
-        #region Constructors
-        public ContactsListPage(IApp app, Platform platform) : base(app, platform, PageTitles.ContactsListPage)
+        public ContactsListPage(IApp app) : base(app, PageTitles.ContactsListPage)
         {
             _addContactButon = x => x.Marked(AutomationIdConstants.AddContactButon);
         }
-        #endregion
 
-        #region Properties
         public bool IsRefreshActivityIndicatorDisplayed =>
             GetIsRefreshActivityIndicatorDisplayed();
-        #endregion
 
-        #region Methods
         public void TapAddContactButton()
         {
-            switch (OniOS)
-            {
-                case true:
-                    App.Tap(_addContactButon);
-                    break;
-                default:
-                    App.Tap(x => x.Class("ActionMenuItemView"));
-                    break;
-            }
+            if (App is iOSApp)
+                App.Tap(_addContactButon);
+            else if (App is AndroidApp)
+                App.Tap(x => x.Class("ActionMenuItemView"));
+            else
+                throw new NotSupportedException();
 
             App.Screenshot("Tapped Add Contact Button");
         }
@@ -51,51 +41,49 @@ namespace RealmSampleApp.UITests
                 App.ScrollDownTo(fullName);
                 return true;
             }
-            catch (System.Exception e)
+            catch
             {
                 return false;
             }
         }
 
-        public async Task WaitForNoPullToRefreshActivityIndicatorAsync(int timeoutInSeconds = 10)
+        public async Task WaitForNoPullToRefreshActivityIndicatorAsync(TimeSpan? timeout = null)
         {
+            timeout ??= TimeSpan.FromSeconds(10);
+
             int loopCount = 0;
 
             while (IsRefreshActivityIndicatorDisplayed)
             {
-				if (loopCount / 10 > timeoutInSeconds)
-					Assert.Fail("WaitForNoPullToRefreshActivityIndicatorAsync Failed");
+                if (loopCount / 10 > timeout.Value.TotalSeconds)
+                    Assert.Fail("WaitForNoPullToRefreshActivityIndicatorAsync Failed");
 
                 loopCount++;
-                await Task.Delay(100);
+                await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
             }
         }
 
-        public async Task WaitForPullToRefreshActivityIndicatorAsync(int timeoutInSeconds = 10)
+        public async Task WaitForPullToRefreshActivityIndicatorAsync(TimeSpan? timeout = null)
         {
+            timeout ??= TimeSpan.FromSeconds(10);
+
             int loopCount = 0;
 
             while (!IsRefreshActivityIndicatorDisplayed)
             {
-                if (loopCount / 10 > timeoutInSeconds)
+                if (loopCount / 10 > timeout.Value.TotalSeconds)
                     Assert.Fail("WaitForPullToRefreshActivityIndicatorAsync Failed");
 
                 loopCount++;
-                await Task.Delay(100);
+                await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
             }
         }
 
-        bool GetIsRefreshActivityIndicatorDisplayed()
+        bool GetIsRefreshActivityIndicatorDisplayed() => App switch
         {
-            switch (OniOS)
-            {
-                case true:
-                    return App.Query(x => x.Class("UIRefreshControl")).Any();
-
-                default:
-                    return (bool)App.Query(x => x.Class("SwipeRefreshLayout").Invoke("isRefreshing")).FirstOrDefault();
-            }
-        }
-        #endregion
+            iOSApp => App.Query(x => x.Class("UIRefreshControl")).Any(),
+            AndroidApp => (bool)App.Query(x => x.Class("SwipeRefreshLayout").Invoke("isRefreshing")).First(),
+            _ => throw new NotSupportedException()
+        };
     }
 }
